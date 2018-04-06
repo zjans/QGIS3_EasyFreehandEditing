@@ -198,11 +198,11 @@ class FreehandEditing:
         else:
             dlg = self.iface.getFeatureForm(layer, f)
             self.tool.setIgnoreClick(True)
-            if dlg.exec_():
-                layer.addFeature(f)
-                layer.endEditCommand()
-            else:
-                layer.destroyEditCommand()
+            dlg.exec_():
+                #layer.addFeature(f)
+                #layer.endEditCommand()
+            #else:
+                #layer.destroyEditCommand()
             self.tool.setIgnoreClick(False)
 
     def deactivate(self):
