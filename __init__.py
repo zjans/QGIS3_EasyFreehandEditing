@@ -47,6 +47,6 @@ def email():
     return "pavol.kapusta@gmail.com"
 
 def classFactory(iface):
-  from freehandediting import FreehandEditing
+  from .freehandediting import FreehandEditing
   return FreehandEditing(iface)
 

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
 
@@ -58,14 +59,14 @@ class FreehandEditingTool(QgsMapTool):
             return
         self.drawing = True
         self.type = layer.geometryType()
-        self.isPolygon = (self.type != QGis.Line)
+        self.isPolygon = (self.type != 1)
         if self.isPolygon:
-            #print "self is a polygon"
-            self.rb = QgsRubberBand(self.canvas, QGis.Polygon)
+
+            self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
             self.rb.setColor(QColor(255, 0, 0, 63))
             self.rb.setWidth(2)
         else:
-            #print "self is not a polygon"
+
             self.rb = QgsRubberBand(self.canvas)
             self.rb.setColor(QColor(255, 0, 0, 150))
             self.rb.setWidth(1)
@@ -100,7 +101,7 @@ class FreehandEditingTool(QgsMapTool):
         if self.ignoreclick or not self.rb:
             return
         self.rb.addPoint(self.toMapCoordinates(event.pos()))
-        #print self.rb.asGeometry().exportToWkt()
+
 
     def canvasReleaseEvent(self, event):
         if self.ignoreclick:
@@ -115,7 +116,7 @@ class FreehandEditingTool(QgsMapTool):
         # reset rubberband and refresh the canvas
         self.rb.reset()
         self.rb = None
-        self.isPolygon = (self.type != QGis.Line)
+        self.isPolygon = (self.type != 1)
         self.canvas.refresh()
 
     def setIgnoreClick(self, ignore):
@@ -132,7 +133,7 @@ class FreehandEditingTool(QgsMapTool):
         layer = mc.currentLayer()
         self.type = layer.geometryType()
         # toolbar button is only active with editable line and polygon layers
-        self.isPolygon = (self.type != QGis.Line)
+        self.isPolygon = (self.type != 1)
 
     def deactivate(self):
         pass
