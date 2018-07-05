@@ -23,7 +23,7 @@ tags=digitizing,vector
 ; if they are not filled
 homepage=http://hub.qgis.org/projects/freehandediting
 tracker=http://hub.qgis.org/projects/freehandediting/issues
-repository=https://github.com/vinayan/freehandEditing
+repository=https://github.com/DocOC86/freehandEditing_3
 icon=icon.png
 
 ; experimental flag
