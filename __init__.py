@@ -30,7 +30,7 @@ def description():
 
 
 def version():
-    return "Version 0.2.6"
+    return "Version 1.0.0"
 
 
 def icon():
@@ -38,7 +38,7 @@ def icon():
 
 
 def qgisMinimumVersion():
-    return "1.7"
+    return "3.0"
 
 def author():
     return "Pavol Kapusta"
