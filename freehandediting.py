@@ -49,10 +49,10 @@ from .freehandeditingtool import FreehandEditingTool
 # initialize Qt resources from file resources.py
 from . import resources
 
-try:
-    from qgis.core import Qgis
-except ImportError:
-    from qgis.core import QGis as Qgis
+#try:
+#    from qgis.core import Qgis
+#except ImportError:
+#    from qgis.core import QGis as Qgis
 
 class FreehandEditing:
 
@@ -174,7 +174,9 @@ class FreehandEditing:
         #validate geometry
         if not (s.validateGeometry()):
             f.setGeometry(s)
+
         else:
+
             reply = QMessageBox.question(
                 self.iface.mainWindow(),
                 'Feature not valid',
@@ -191,13 +193,15 @@ class FreehandEditing:
 
         if Qgis.QGIS_VERSION_INT >= 10900:  # vector api change update
             f.initAttributes(fields.count())
+
             for i in range(fields.count()):
+
                 if provider.defaultValue(i):
                     f.setAttribute(i, provider.defaultValue(i))
         else:
             for i in fields:
-
-                f.setAttribute(fields.indexOf(i.name()), provider.defaultValue(fields.indexOf(i.name())))
+                f.addAttribute(i, provider.defaultValue(i))
+                #f.setAttribute(fields.indexOf(i.name()), provider.defaultValue(fields.indexOf(i.name())))
 
         layer.beginEditCommand("Feature added")
         if (settings.value(
@@ -206,12 +210,9 @@ class FreehandEditing:
             layer.addFeature(f)
             layer.endEditCommand()
         else:
-
+            dlg = self.iface.getFeatureForm(layer, f)
             self.tool.setIgnoreClick(True)
 
-            dlg = self.iface.getFeatureForm(layer, f)
-
-            dlg.show()
             if dlg.exec_():
 
                 layer.addFeature(dlg.feature())

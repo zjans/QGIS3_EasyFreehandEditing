@@ -49,13 +49,15 @@ class FreehandEditingTool(QgsMapTool):
             self.mCtrl = False
 
     def canvasPressEvent(self, event):
+
         if self.ignoreclick or self.drawing:
+
             # ignore secondary canvasPressEvents if already drag-drawing
             # NOTE: canvasReleaseEvent will still occur (ensures rb is deleted)
             # click on multi-button input device will halt drag-drawing
             return
         layer = self.canvas.currentLayer()
-        if not layer:
+        if layer is None:
             return
         self.drawing = True
         self.type = layer.geometryType()
