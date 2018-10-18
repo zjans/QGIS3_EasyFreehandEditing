@@ -49,11 +49,6 @@ from .freehandeditingtool import FreehandEditingTool
 # initialize Qt resources from file resources.py
 from . import resources
 
-#try:
-#    from qgis.core import Qgis
-#except ImportError:
-#    from qgis.core import QGis as Qgis
-
 class FreehandEditing:
 
     def __init__(self, iface):
@@ -197,19 +192,9 @@ class FreehandEditing:
         # add attribute fields to feature
         fields = layer.fields()
 
-        # if Qgis.QGIS_VERSION_INT >= 10900:  # vector api change update
         f.initAttributes(fields.count())
 
-        # for i in range(fields.count()):
-        #     print (i)
-        #     if provider.defaultValue(i):
-        #         f.setAttribute(i, provider.defaultValue(i))
-        # else:
-        # for i in fields:
-        #     f.addAttribute(i, provider.defaultValue(i))
-        #     #f.setAttribute(i, provider.defaultValue(i))
-        #
-        #     #f.setAttribute(fields.indexOf(i.name()), provider.defaultValue(fields.indexOf(i.name())))
+
 
         layer.beginEditCommand("Feature added")
         if layer.geometryType() == 1  or layer.geometryType() == 2:
