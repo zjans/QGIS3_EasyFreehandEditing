@@ -110,42 +110,47 @@ class FreehandEditing:
         self.active = True
 
     def toggle(self):
+        print ("toggle")
         mc = self.canvas
         layer = mc.currentLayer()
         if layer is None:
+            self.deactivate()
+            self.freehand_edit.setEnabled(False)
+            print("right")
             return
 
         #Decide whether the plugin button/menu is enabled or disabled
-
-        try:
-            if layer.isEditable() and (layer.geometryType() == 2 or layer.geometryType() == 1):
-                self.freehand_edit.setEnabled(True)
-                self.spinBoxAction.setEnabled(True)
-                self.spinBoxAction.setEnabled(layer.crs().projectionAcronym() != "longlat")
-                try:  # remove any existing connection first
-                    layer.editingStopped.disconnect(self.toggle)
-                except TypeError:  # missing connection
-                    pass
-                layer.editingStopped.connect(self.toggle)
-                try:
-                    layer.editingStarted.disconnect(self.toggle)
-                except TypeError:  # missing connection
-                    pass
-            else:
-                self.freehand_edit.setEnabled(False)
-                self.spinBoxAction.setEnabled(False)
-                if layer.type() == 0 and (layer.geometryType() == 1  or layer.geometryType() == 2):
+        else:
+            try:
+                if layer.isEditable() and (layer.geometryType() == 2 or layer.geometryType() == 1):
+                    self.freehand_edit.setEnabled(True)
+                    self.spinBoxAction.setEnabled(True)
+                    self.spinBoxAction.setEnabled(layer.crs().projectionAcronym() != "longlat")
                     try:  # remove any existing connection first
-                        layer.editingStarted.disconnect(self.toggle)
-                    except TypeError:  # missing connection
-                        pass
-                    layer.editingStarted.connect(self.toggle)
-                    try:
                         layer.editingStopped.disconnect(self.toggle)
                     except TypeError:  # missing connection
                         pass
-        except:
-            print ("fault")
+                    layer.editingStopped.connect(self.toggle)
+                    try:
+                        layer.editingStarted.disconnect(self.toggle)
+                    except TypeError:  # missing connection
+                        pass
+                else:
+                    self.freehand_edit.setEnabled(False)
+                    self.spinBoxAction.setEnabled(False)
+                    if layer.type() == 0 and (layer.geometryType() == 1  or layer.geometryType() == 2):
+                        try:  # remove any existing connection first
+                            layer.editingStarted.disconnect(self.toggle)
+                        except TypeError:  # missing connection
+                            pass
+                        layer.editingStarted.connect(self.toggle)
+                        try:
+                            layer.editingStopped.disconnect(self.toggle)
+                        except TypeError:  # missing connection
+                            pass
+
+            except:
+                print ("fault")
 
     def createFeature(self, geom):
         settings = QSettings()
@@ -167,8 +172,9 @@ class FreehandEditing:
 
         #On the Fly reprojection.
         if layerCRSSrsid != projectCRSSrsid:
-            geom.transform(QgsCoordinateTransform(projectCRSSrsid,
-                                                  layerCRSSrsid))
+            p = QgsCoordinateReferenceSystem("EPSG:"+str(projectCRSSrsid))
+            l = QgsCoordinateReferenceSystem("EPSG:"+str(layerCRSSrsid))
+            geom.transform(QgsCoordinateTransform(p,l,QgsProject.instance()))
         s = geom.simplify(tolerance)
 
         #validate geometry
@@ -191,41 +197,49 @@ class FreehandEditing:
         # add attribute fields to feature
         fields = layer.fields()
 
-        if Qgis.QGIS_VERSION_INT >= 10900:  # vector api change update
-            f.initAttributes(fields.count())
+        # if Qgis.QGIS_VERSION_INT >= 10900:  # vector api change update
+        f.initAttributes(fields.count())
 
-            for i in range(fields.count()):
-
-                if provider.defaultValue(i):
-                    f.setAttribute(i, provider.defaultValue(i))
-        else:
-            for i in fields:
-                f.addAttribute(i, provider.defaultValue(i))
-                #f.setAttribute(fields.indexOf(i.name()), provider.defaultValue(fields.indexOf(i.name())))
+        # for i in range(fields.count()):
+        #     print (i)
+        #     if provider.defaultValue(i):
+        #         f.setAttribute(i, provider.defaultValue(i))
+        # else:
+        # for i in fields:
+        #     f.addAttribute(i, provider.defaultValue(i))
+        #     #f.setAttribute(i, provider.defaultValue(i))
+        #
+        #     #f.setAttribute(fields.indexOf(i.name()), provider.defaultValue(fields.indexOf(i.name())))
 
         layer.beginEditCommand("Feature added")
-        if (settings.value(
-                "/qgis/digitizing/disable_enter_attribute_values_dialog",
-                False, type=bool)):
-            layer.addFeature(f)
-            layer.endEditCommand()
-        else:
-            dlg = self.iface.getFeatureForm(layer, f)
-            self.tool.setIgnoreClick(True)
+        if layer.geometryType() == 1  or layer.geometryType() == 2:
 
-            if dlg.exec_():
-
-                layer.addFeature(dlg.feature())
+            if (settings.value(
+                    "/qgis/digitizing/disable_enter_attribute_values_dialog",
+                    False, type=bool)):
+                layer.addFeature(f)
                 layer.endEditCommand()
-
             else:
-                layer.destroyEditCommand()
-            self.tool.setIgnoreClick(False)
+                dlg = self.iface.getFeatureForm(layer, f)
+                dlg.setMode(1)
+                self.tool.setIgnoreClick(True)
+
+                if dlg.exec_():
+
+                    #layer.addFeature(dlg.feature())
+                    layer.endEditCommand()
+
+                else:
+                    layer.destroyEditCommand()
+                self.tool.setIgnoreClick(False)
+        else:
+            print("false geomtry")
 
 
 
 
     def deactivate(self):
+
         self.freehand_edit.setChecked(False)
         if self.active:
             self.tool.rbFinished['QgsGeometry*'].disconnect(self.createFeature)
