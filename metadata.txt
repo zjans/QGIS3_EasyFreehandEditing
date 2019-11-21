@@ -21,8 +21,8 @@ tags=digitizing,vector
 ; in a future version of the web application it will
 ; be probably possible to create a project on redmine
 ; if they are not filled
-homepage=http://hub.qgis.org/projects/freehandediting
-tracker=http://hub.qgis.org/projects/freehandediting/issues
+homepage=https://github.com/DocOC86/freehandEditing_3
+tracker=https://github.com/DocOC86/freehandEditing_3/issues
 repository=https://github.com/DocOC86/freehandEditing_3
 icon=icon.png
 
