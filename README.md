@@ -5,4 +5,5 @@ FreehandEditing_3 is an update from earlier freehandEditing Tool to QGIS 3.x. Wi
 2. switch to edit mode
 3. press the freehand button and create a new geometry
 ### Options:
-The tolerance counter can be used to simplify geometries.
+- the tolerance counter can be used to simplify geometries
+- snapping ability for line geometries (pressed ctrl)
