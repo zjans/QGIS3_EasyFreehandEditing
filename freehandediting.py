@@ -49,6 +49,11 @@ from .freehandeditingtool import FreehandEditingTool
 # initialize Qt resources from file resources.py
 from . import resources
 
+#try:
+#    from qgis.core import Qgis
+#except ImportError:
+#    from qgis.core import QGis as Qgis
+
 class FreehandEditing:
 
     def __init__(self, iface):
@@ -86,6 +91,10 @@ class FreehandEditing:
 
         # Connect to signals for button behaviour
         self.freehand_edit.triggered.connect(self.freehandediting)
+        try:
+            self.canvas.currentLayer().editingStarted.connect(self.toggle)
+        except:
+            print("no layer")
         self.iface.currentLayerChanged['QgsMapLayer*'].connect(self.toggle)
         self.canvas.mapToolSet['QgsMapTool*','QgsMapTool*'].connect(self.deactivate)
 
@@ -105,13 +114,13 @@ class FreehandEditing:
         self.active = True
 
     def toggle(self):
-        print ("toggle")
+
         mc = self.canvas
         layer = mc.currentLayer()
         if layer is None:
             self.deactivate()
             self.freehand_edit.setEnabled(False)
-            print("right")
+
             return
 
         #Decide whether the plugin button/menu is enabled or disabled
@@ -119,8 +128,8 @@ class FreehandEditing:
             try:
                 if layer.isEditable() and (layer.geometryType() == 2 or layer.geometryType() == 1):
                     self.freehand_edit.setEnabled(True)
-                    self.spinBoxAction.setEnabled(True)
-                    self.spinBoxAction.setEnabled(layer.crs().projectionAcronym() != "longlat")
+                    self.spinBoxAction.setEnabled(layer.crs().projectionAcronym() == "longlat")
+
                     try:  # remove any existing connection first
                         layer.editingStopped.disconnect(self.toggle)
                     except TypeError:  # missing connection
@@ -195,7 +204,6 @@ class FreehandEditing:
         f.initAttributes(fields.count())
 
 
-
         layer.beginEditCommand("Feature added")
         if layer.geometryType() == 1  or layer.geometryType() == 2:
 
@@ -211,7 +219,6 @@ class FreehandEditing:
 
                 if dlg.exec_():
 
-                    #layer.addFeature(dlg.feature())
                     layer.endEditCommand()
 
                 else:

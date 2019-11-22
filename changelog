@@ -17,3 +17,6 @@ Version 0.2.5:
 - exchange of values between rubberband and createFeature function mediated with 
 QgsGeometry
 
+Version 1.0:
+
+- QGIS 3.x compatible

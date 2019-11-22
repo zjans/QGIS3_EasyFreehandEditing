@@ -43,10 +43,12 @@ class FreehandEditingTool(QgsMapTool):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = True
+            print("ctrl")
 
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Control:
             self.mCtrl = False
+            print("ctrl release")
 
     def canvasPressEvent(self, event):
 
@@ -74,24 +76,25 @@ class FreehandEditingTool(QgsMapTool):
             self.rb.setWidth(1)
         x = event.pos().x()
         y = event.pos().y()
-        if self.isPolygon:
+        if self.type == 1:
             if self.mCtrl:
+
                 startingPoint = QPoint(x, y)
-                snapper = QgsMapCanvasSnapper(self.canvas)
-                (retval, result) = \
-                    snapper.snapToCurrentLayer(startingPoint,
-                                               QgsSnapper.SnapToVertex)
-                if result:
-                    point = result[0].snappedVertex
+                snapper = QgsMapCanvasSnappingUtils(self.canvas)
+                result = snapper.snapToCurrentLayer(startingPoint,QgsPointLocator.Vertex)
+
+                if result.point().x() != 0 and result.point().y() != 0:
+
+                    point = QgsPointXY()
+                    point.setX(result.point().x())
+                    point.setY(result.point().y())
+
                 else:
-                    (retval, result) = \
-                        snapper.snapToBackgroundLayers(startingPoint)
-                    if result:
-                        point = result[0].snappedVertex
-                    else:
-                        point = self.toLayerCoordinates(layer, event.pos())
+
+                    point = self.toLayerCoordinates(layer, event.pos())
             else:
                 point = self.toLayerCoordinates(layer, event.pos())
+
             pointMap = self.toMapCoordinates(layer, point)
             self.rb.addPoint(pointMap)
         else:
