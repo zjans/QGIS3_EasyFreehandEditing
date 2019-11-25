@@ -128,7 +128,7 @@ class FreehandEditing:
             try:
                 if layer.isEditable() and (layer.geometryType() == 2 or layer.geometryType() == 1):
                     self.freehand_edit.setEnabled(True)
-                    self.spinBoxAction.setEnabled(layer.crs().projectionAcronym() == "longlat")
+                    self.spinBoxAction.setEnabled(layer.crs().projectionAcronym() != "longlat")
 
                     try:  # remove any existing connection first
                         layer.editingStopped.disconnect(self.toggle)
