@@ -5,7 +5,7 @@ qgisMinimumVersion=3.0
 description=Freehand line/polygon editing
 category=Vector
 version=version 1.0
-author=Pavol Kapusta, Rick Brüning
+author=Pavol Kapusta, Rick Brüning, Jan Schindler
 email=pavol.kapusta@gmail.com
 ; end of mandatory metadata
 
